@@ -13,7 +13,6 @@ repositories {
     mavenCentral()
 }
 
-// It's best practice to use 'latest.release' like the rlhd project does
 def runeLiteVersion = 'latest.release'
 
 dependencies {
@@ -26,7 +25,7 @@ dependencies {
     testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
-// CORRECTED LINE
+// Corrected to match your actual package name
 group = 'com.upgradefinder'
 version = '1.0-SNAPSHOT'
 
@@ -38,39 +37,18 @@ tasks.withType(JavaCompile).configureEach {
 tasks.register('shadowJar', Jar) {
     dependsOn configurations.testRuntimeClasspath
     manifest {
-        // CORRECTED LINE
+        // Corrected to match your actual test file
         attributes('Main-Class': 'com.upgradefinder.UpgradeFinderPluginTest', 'Multi-Release': true)
     }
-
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from sourceSets.main.output
     from sourceSets.test.output
     from {
         configurations.testRuntimeClasspath.collect { file ->
-            file.isDirectory() ?
-                    file : zipTree(file)
+            file.isDirectory() ? file : zipTree(file)
         }
     }
-
-    exclude 'META-INF/INDEX.LIST'
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude '**/module-info.class'
-
-    group = BasePlugin.BUILD_GROUP
+    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', '**/module-info.class'
     archiveClassifier.set('shadow')
     archiveFileName.set("${rootProject.name}-${project.version}-all.jar")
-}
-
-tasks.register('launchJagexLauncher', Exec) {
-    dependsOn 'shadowJar'
-    group = "application"
-    description = "Launches the Jagex Launcher which will then start a developer RuneLite client."
-    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-        commandLine 'cmd', '/c', 'C:\\Program Files (x86)\\Jagex Launcher\\JagexLauncher.exe'
-    } else {
-        commandLine 'sh', '-c', '"/Applications/Jagex Launcher.app/Contents/MacOS/JagexLauncher"'
-    }
-    args '--runelite-args=--external-plugins=' + tasks.shadowJar.archiveFile.get().asFile
 }
