@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-def runeLiteVersion = '1.11.16'
+def runeLiteVersion = '1.11.19'
 
 dependencies {
     compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -64,12 +64,14 @@ tasks.register('shadowJar', Jar) {
 }
 
 tasks.register('launchJagexLauncher', Exec) {
+    dependsOn 'shadowJar'
     group = "application"
     description = "Launches the Jagex Launcher which will then start a developer RuneLite client."
-
     if (System.getProperty("os.name").toLowerCase().contains("windows")) {
         commandLine 'cmd', '/c', 'C:\\Program Files (x86)\\Jagex Launcher\\JagexLauncher.exe'
     } else {
         commandLine 'sh', '-c', '"/Applications/Jagex Launcher.app/Contents/MacOS/JagexLauncher"'
     }
+    // The corrected line is below
+    args '--runelite-args=--external-plugins=' + tasks.shadowJar.archiveFile.get().asFile
 }

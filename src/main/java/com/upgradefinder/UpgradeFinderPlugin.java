@@ -26,7 +26,9 @@ import net.runelite.client.util.Text;
 
 @Slf4j
 @PluginDescriptor(
-        name = "Upgrade Finder"
+        name = "Upgrade Finder",
+        description = "A plugin to find the best gear upgrades.",
+        tags = {"upgrade", "finder", "gear"}
 )
 public class UpgradeFinderPlugin extends Plugin
 {
