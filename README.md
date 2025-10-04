@@ -7,7 +7,7 @@ A RuneLite plugin to help Old School RuneScape players, especially Ironmen, find
 The Best in Slot (BiS) Finder helps you discover the optimal gear progression path directly within the game. By right-clicking an equipped or inventoried item, you can get immediate, context-aware upgrade suggestions, taking the guesswork out of gearing up.
 
 
-<img width="242" height="576" alt="image" src="https://github.com/user-attachments/assets/f1d4cd57-3214-4eb7-98a6-ff949c5f2231" />
+<img width="234" height="658" alt="image" src="https://github.com/user-attachments/assets/57d4c3d6-8f10-4dc8-87f3-1a6193fe294d" />
 
 
 ## Features
