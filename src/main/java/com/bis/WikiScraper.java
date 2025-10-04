@@ -117,10 +117,37 @@ public class WikiScraper {
         Elements dataCells = firstDataRow.select("td");
         MonsterDrop drop = new MonsterDrop();
         drop.setMonsterName(getCellText(dataCells, headerMap, Arrays.asList("Source", "Monster")));
+        drop.setMonsterWikiUrl(getCellUrl(dataCells, headerMap, Arrays.asList("Source", "Monster")));
         drop.setLevel(getCellText(dataCells, headerMap, Arrays.asList("Level", "Combat level")));
         drop.setQuantity(getCellText(dataCells, headerMap, Arrays.asList("Quantity")));
-        drop.setRarity(getCellText(dataCells, headerMap, Arrays.asList("Rarity", "Drop rate")));
+        String rarityString = getCellText(dataCells, headerMap, Arrays.asList("Rarity", "Drop rate"));
+        drop.setRarity(rarityString);
+        drop.setRarityValue(parseRarity(rarityString));
         return drop;
+    }
+
+    private double parseRarity(String rarity) {
+        if (rarity == null || rarity.equals("N/A")) {
+            return 0;
+        }
+        String cleanRarity = rarity.trim().replace(",", "");
+        if (cleanRarity.equalsIgnoreCase("Always")) {
+            return 1.0;
+        }
+        if (cleanRarity.contains("/")) {
+            try {
+                String[] parts = cleanRarity.split("/");
+                double numerator = Double.parseDouble(parts[0]);
+                double denominator = Double.parseDouble(parts[1]);
+                if (denominator != 0) {
+                    return numerator / denominator;
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                log.warn("Could not parse rarity fraction: {}", rarity);
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private ShopSource parseShopTable(Element table, Map<String, Integer> headerMap) {
@@ -130,6 +157,7 @@ public class WikiScraper {
         Elements dataCells = firstDataRow.select("td");
         ShopSource shop = new ShopSource();
         shop.setSeller(getCellText(dataCells, headerMap, Arrays.asList("Seller", "Shop")));
+        shop.setSellerWikiUrl(getCellUrl(dataCells, headerMap, Arrays.asList("Seller", "Shop")));
         shop.setLocation(getCellText(dataCells, headerMap, Arrays.asList("Location")));
         shop.setStock(getCellText(dataCells, headerMap, Arrays.asList("Stock", "Initial stock")));
         shop.setPrice(getCellText(dataCells, headerMap, Arrays.asList("Price", "Price sold at")));
@@ -153,6 +181,20 @@ public class WikiScraper {
             }
         }
         return "N/A";
+    }
+
+    private String getCellUrl(Elements cells, Map<String, Integer> headerMap, List<String> headerNames) {
+        for (String headerName : headerNames) {
+            Integer index = headerMap.get(headerName);
+            if (index != null && index < cells.size()) {
+                Element cell = cells.get(index);
+                Element link = cell.selectFirst("a");
+                if (link != null) {
+                    return WIKI_BASE_URL + link.attr("href");
+                }
+            }
+        }
+        return null;
     }
 
     private Weapon parseWikitext(String weaponName, String wikitext) {

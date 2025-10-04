@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.runelite.client.game.ItemManager;
+
 @Slf4j
 @PluginDescriptor(
         name = "Best in Slot",
@@ -42,6 +44,9 @@ public class BiSPlugin extends Plugin {
     @Inject
     private BiSConfig config;
 
+    @Inject
+    private ItemManager itemManager;
+
     private OkHttpClient okHttpClient;
     private WikiScraper wikiScraper;
     private BiSPanel panel;
@@ -49,7 +54,7 @@ public class BiSPlugin extends Plugin {
 
     @Override
     protected void startUp() throws Exception {
-        this.panel = new BiSPanel();
+        this.panel = new BiSPanel(config, itemManager);
         this.okHttpClient = new OkHttpClient();
         this.wikiScraper = new WikiScraper(okHttpClient);
 

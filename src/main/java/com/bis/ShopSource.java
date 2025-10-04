@@ -8,6 +8,7 @@ public class ShopSource implements Source {
     private String location;
     private String stock;
     private String price;
+    private String sellerWikiUrl;
 
     @Override
     public String getDisplayString() {

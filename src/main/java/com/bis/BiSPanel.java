@@ -3,6 +3,8 @@ package com.bis;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 
+import net.runelite.client.game.ItemManager;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -10,12 +12,17 @@ import java.util.List;
 
 public class BiSPanel extends PluginPanel {
 
+    private final BiSConfig config;
+    private final ItemManager itemManager;
+
     private final JPanel welcomePanel;
     private final JPanel resultsPanel;
     private final JScrollPane scrollPane;
 
-    public BiSPanel() {
+    public BiSPanel(BiSConfig config, ItemManager itemManager) {
         super(false);
+        this.config = config;
+        this.itemManager = itemManager;
         setLayout(new GridBagLayout());
         setBackground(ColorScheme.DARK_GRAY_COLOR);
 
@@ -68,7 +75,7 @@ public class BiSPanel extends PluginPanel {
             } else {
                 resultsPanel.add(createHeaderLabel("Upgrades for " + itemName));
                 for (Weapon upgrade : upgrades) {
-                    resultsPanel.add(new BiSBox(upgrade));
+                    resultsPanel.add(new BiSBox(upgrade, config, itemManager));
                     resultsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 }
             }

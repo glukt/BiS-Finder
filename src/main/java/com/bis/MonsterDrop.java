@@ -8,6 +8,8 @@ public class MonsterDrop implements Source {
     private String level;
     private String quantity;
     private String rarity;
+    private double rarityValue;
+    private String monsterWikiUrl;
 
     @Override
     public String getDisplayString() {
