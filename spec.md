@@ -8,10 +8,11 @@
 ## 2. Current Functionality (as of Oct 4, 2025)
 
 -   The plugin successfully loads and adds a navigation button to the side toolbar.
--   Right-clicking a weapon and selecting "Check Upgrades" opens the side panel.
+-   Right-clicking a weapon and selecting "Find BiS" opens the side panel.
 -   The panel displays a list of potential upgrades in a collapsible accordion view.
 -   Each item correctly displays its inventory icon and combat stats (Stab, Slash, Crush, Strength, Attack Speed).
 -   A clickable arrow icon links directly to the item's official OSRS Wiki page.
+-   Hyper links are available for each Source
 -   The plugin scrapes the wiki to find and display detailed source information for each item, including:
     -   **Monster Drops:** Shows the primary monster source, its combat level, drop quantity, and rarity.
     -   **Shop Locations:** Shows the seller, location, stock, and price.
@@ -22,9 +23,11 @@
 
 -   **Bug:** The scraper does not currently parse "Creation" information for items that are crafted rather than dropped or bought (e.g., Abyssal tentacle).
 -   **Next Task:** Implement more intelligent upgrade logic. The current logic is a simple stat comparison. The next step is to create a more sophisticated algorithm to determine what a true "upgrade" is.
+  - **Task hurdles:** How do we parse more weapons/items or determine what is relevant? Do we make the BiS selection more robust, allowing Slash/Stab/Crush/Magic/Range/Overall DPS? 
 -   **Visual Polish:** Improve the UI for displaying source information. We can take inspiration from the `loot-lookup-plugin` to add coloring for rarity and other visual cues to make the data easier to read at a glance.
 
 ## 4. Future Goals
 
 -   Expand coverage to other gear slots (armor, jewelry, etc.).
--   Provide a side-by-side stat comparison view.
+-   Provide a side-by-side stat comparison view with the weapon you checked, + and -'s next to values in the panel relatively.
+-   Boss or Monster selection, analyzing it's weakness and providing you the most optimal gear setup from your bank.
