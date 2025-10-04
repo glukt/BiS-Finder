@@ -12,6 +12,9 @@ public class Weapon {
     private int rangedAttack;
     private int strengthBonus;
     private int attackSpeed;
+    private String imageUrl;
+    private String wikiUrl;
+    private Source source;
 
     @Override
     public String toString() {
@@ -24,6 +27,9 @@ public class Weapon {
                 ", rangedAttack=" + rangedAttack +
                 ", strengthBonus=" + strengthBonus +
                 ", attackSpeed=" + attackSpeed +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", wikiUrl='" + wikiUrl + '\'' +
+                ", source=" + (source != null ? source.getDisplayString() : "N/A") +
                 '}';
     }
 }

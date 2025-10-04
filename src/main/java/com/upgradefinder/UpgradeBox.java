@@ -1,5 +1,6 @@
 package com.upgradefinder;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 
@@ -8,7 +9,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URI;
 
+@Slf4j
 public class UpgradeBox extends JPanel {
 
     private final JPanel contentPanel;
@@ -22,10 +25,45 @@ public class UpgradeBox extends JPanel {
         headerPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR.darker());
         headerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
+        JLabel imageLabel = new JLabel("Loading...");
+        imageLabel.setBorder(new EmptyBorder(0, 0, 0, 10));
+        ImageUtil.loadImageAsync(weapon.getImageUrl()).thenAccept(image -> {
+            if (image != null) {
+                imageLabel.setIcon(new ImageIcon(image.getScaledInstance(32, 32, Image.SCALE_SMOOTH)));
+                imageLabel.setText(null);
+            }
+        });
+        headerPanel.add(imageLabel, BorderLayout.WEST);
+
         JLabel nameLabel = new JLabel(weapon.getName());
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setFont(FontManager.getRunescapeBoldFont());
         headerPanel.add(nameLabel, BorderLayout.CENTER);
+
+        // Add wiki link arrow
+        JLabel linkLabel = new JLabel("->");
+        linkLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+        linkLabel.setToolTipText("Open wiki page");
+        linkLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
+        linkLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(weapon.getWikiUrl()));
+                } catch (Exception ex) {
+                    log.error("Could not open wiki link", ex);
+                }
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                linkLabel.setForeground(Color.CYAN);
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                linkLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+            }
+        });
+        headerPanel.add(linkLabel, BorderLayout.EAST);
 
         // Content Panel
         contentPanel = new JPanel(new GridBagLayout());
@@ -39,12 +77,46 @@ public class UpgradeBox extends JPanel {
         c.gridy = 0;
         c.anchor = GridBagConstraints.WEST;
 
-        // Add stat labels using GridBagLayout
+        // Add stat labels
         addStat(contentPanel, c, "Slash Attack:", String.valueOf(weapon.getSlashAttack()));
         addStat(contentPanel, c, "Stab Attack:", String.valueOf(weapon.getStabAttack()));
         addStat(contentPanel, c, "Crush Attack:", String.valueOf(weapon.getCrushAttack()));
         addStat(contentPanel, c, "Strength Bonus:", String.valueOf(weapon.getStrengthBonus()));
         addStat(contentPanel, c, "Attack Speed:", String.valueOf(weapon.getAttackSpeed()));
+
+        // Add source information in a dedicated panel
+        Source source = weapon.getSource();
+        if (source != null) {
+            JPanel sourceInfoPanel = new JPanel(new GridBagLayout());
+            sourceInfoPanel.setBorder(BorderFactory.createTitledBorder("Source Information"));
+            sourceInfoPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+
+            GridBagConstraints sourceC = new GridBagConstraints();
+            sourceC.fill = GridBagConstraints.HORIZONTAL;
+            sourceC.weightx = 1.0;
+            sourceC.gridx = 0;
+            sourceC.gridy = 0;
+            sourceC.anchor = GridBagConstraints.WEST;
+
+            if (source instanceof MonsterDrop) {
+                MonsterDrop drop = (MonsterDrop) source;
+                addStat(sourceInfoPanel, sourceC, "Source:", drop.getMonsterName());
+                addStat(sourceInfoPanel, sourceC, "Level:", drop.getLevel());
+                addStat(sourceInfoPanel, sourceC, "Quantity:", drop.getQuantity());
+                addStat(sourceInfoPanel, sourceC, "Rarity:", drop.getRarity());
+            } else if (source instanceof ShopSource) {
+                ShopSource shop = (ShopSource) source;
+                addStat(sourceInfoPanel, sourceC, "Seller:", shop.getSeller());
+                addStat(sourceInfoPanel, sourceC, "Location:", shop.getLocation());
+                addStat(sourceInfoPanel, sourceC, "Stock:", shop.getStock());
+                addStat(sourceInfoPanel, sourceC, "Price:", shop.getPrice());
+            }
+            c.gridy++;
+            c.gridwidth = 2; // Span across both columns
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 10)), c);
+            c.gridy++;
+            contentPanel.add(sourceInfoPanel, c);
+        }
 
         contentPanel.setVisible(false); // Collapsed by default
 
@@ -52,7 +124,9 @@ public class UpgradeBox extends JPanel {
         headerPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                contentPanel.setVisible(!contentPanel.isVisible());
+                if (! (e.getSource() instanceof JLabel)) {
+                    contentPanel.setVisible(!contentPanel.isVisible());
+                }
             }
 
             @Override
