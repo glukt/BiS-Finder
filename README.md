@@ -28,7 +28,7 @@ The plugin is in active development. Here is a snapshot of our current work:
 
 -   **Known Bug:** The wiki scraper does not yet parse "Creation" information for crafted items (e.g., Abyssal tentacle).
 -   **Next Up:** We are working on a more intelligent upgrade algorithm beyond simple stat comparison.
--   **UI Polish:** We plan to improve the UI for displaying source information, inspired by plugins like the Loot Lookup plugin.
+-   **UI Polish:** We plan to improve the UI for displaying source information.
 
 ## Future Goals
 
