@@ -3,12 +3,20 @@ package com.bis;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 
 import java.awt.Color;
 
 @ConfigGroup("bestinslot")
 public interface BiSConfig extends Config
 {
+    @ConfigSection(
+            name = "Rarity Colors",
+            description = "Colors for different drop rate tiers",
+            position = 10
+    )
+    String rarityColors = "rarityColors";
+
     @ConfigItem(
             keyName = "enablePlugin",
             name = "Enable Best in Slot",
@@ -20,51 +28,67 @@ public interface BiSConfig extends Config
     }
 
     @ConfigItem(
-            position = 1,
-            keyName = "commonColor",
+            position = 11,
+            keyName = "alwaysColor",
+            name = "Always Color",
+            description = "Color for 'Always' drops",
+            section = rarityColors
+    )
+    default Color alwaysColor()
+    {
+        return BiSConstants.ALWAYS_COLOR;
+    }
+
+    @ConfigItem(
+            position = 12,
+            keyName = "commonRarityColor",
             name = "Common Color",
-            description = "Color for common drops"
+            description = "Color for drops rarer than 1/25",
+            section = rarityColors
     )
-    default Color commonColor()
+    default Color commonRarityColor()
     {
-        return BiSConstants.DEFAULT_COMMON_COLOR;
+        return BiSConstants.COMMON_RARITY_COLOR;
     }
 
     @ConfigItem(
-            position = 2,
-            keyName = "rareColor",
+            position = 13,
+            keyName = "mediumRarityColor",
+            name = "Medium-Rare Color",
+            description = "Color for drops between 1/25 and 1/75",
+            section = rarityColors
+    )
+    default Color mediumRarityColor()
+    {
+        return BiSConstants.MEDIUM_RARITY_COLOR;
+    }
+
+    @ConfigItem(
+            position = 14,
+            keyName = "rareRarityColor",
             name = "Rare Color",
-            description = "Color for rare drops (better than 1/100)"
+            description = "Color for drops between 1/75 and 1/999",
+            section = rarityColors
     )
-    default Color rareColor()
+    default Color rareRarityColor()
     {
-        return BiSConstants.DEFAULT_RARE_COLOR;
+        return BiSConstants.RARE_RARITY_COLOR;
     }
 
     @ConfigItem(
-            position = 3,
-            keyName = "superRareColor",
+            position = 15,
+            keyName = "superRareRarityColor",
             name = "Super Rare Color",
-            description = "Color for super rare drops (better than 1/1000)"
+            description = "Color for drops rarer than 1/999",
+            section = rarityColors
     )
-    default Color superRareColor()
+    default Color superRareRarityColor()
     {
-        return BiSConstants.DEFAULT_SUPER_RARE_COLOR;
+        return BiSConstants.SUPER_RARE_RARITY_COLOR;
     }
 
     @ConfigItem(
-            position = 4,
-            keyName = "ultraRareColor",
-            name = "Ultra Rare Color",
-            description = "Color for ultra rare drops (better than 1/10000)"
-    )
-    default Color ultraRareColor()
-    {
-        return BiSConstants.DEFAULT_ULTRA_RARE_COLOR;
-    }
-
-    @ConfigItem(
-            position = 5,
+            position = 16,
             keyName = "priceColor",
             name = "Price Color",
             description = "Color for item prices"

@@ -127,18 +127,7 @@ public class BiSBox extends JPanel {
                     addStat(sourceInfoPanel, sourceC, "Seller:", sellerComponent);
                     addStat(sourceInfoPanel, sourceC, "Location:", shop.getLocation());
                     addStat(sourceInfoPanel, sourceC, "Stock:", shop.getStock());
-
-                    // Custom handling for price to fix alignment
-                    sourceC.gridx = 0;
-                    sourceC.weightx = 0.5;
-                    sourceC.anchor = GridBagConstraints.WEST;
-                    sourceInfoPanel.add(new JLabel("Price:"), sourceC);
-
-                    sourceC.gridx = 1;
-                    sourceC.weightx = 0.5;
-                    sourceC.anchor = GridBagConstraints.WEST;
-                    sourceInfoPanel.add(createPriceComponent(shop, config, itemManager), sourceC);
-                    sourceC.gridy++;
+                    addStat(sourceInfoPanel, sourceC, "Price:", createPriceComponent(shop, config, itemManager));
                 }
                 contentPanel.add(sourceInfoPanel, c);
                 c.gridy++;
@@ -227,37 +216,34 @@ public class BiSBox extends JPanel {
     private JLabel createColoredRarityLabel(MonsterDrop drop, BiSConfig config) {
         JLabel label = new JLabel(drop.getRarity());
         double rarity = drop.getRarityValue();
-        if (rarity > 0) {
-            if (rarity <= 0.0001) { // Ultra Rare (1/10000)
-                label.setForeground(config.ultraRareColor());
-            } else if (rarity <= 0.001) { // Super Rare (e.g., 1/1000)
-                label.setForeground(config.superRareColor());
-            } else if (rarity <= 0.01) { // Rare (e.g., 1/100)
-                label.setForeground(config.rareColor());
-            } else { // Common
-                label.setForeground(config.commonColor());
-            }
+
+        if (rarity == 1.0) {
+            label.setForeground(config.alwaysColor());
+        } else if (rarity > 1.0/25.0) { // Common
+            label.setForeground(config.commonRarityColor());
+        } else if (rarity >= 1.0/75.0) { // Medium-Rare
+            label.setForeground(config.mediumRarityColor());
+        } else if (rarity >= 1.0/999.0) { // Rare
+            label.setForeground(config.rareRarityColor());
+        } else if (rarity > 0) { // Super-Rare
+            label.setForeground(config.superRareRarityColor());
         } else {
-            label.setForeground(config.commonColor());
+            label.setForeground(config.commonRarityColor()); // Default
         }
         return label;
     }
 
-    private JPanel createPriceComponent(ShopSource shop, BiSConfig config, ItemManager itemManager) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
-        panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-
+    private JLabel createPriceComponent(ShopSource shop, BiSConfig config, ItemManager itemManager) {
         JLabel priceLabel = new JLabel(shop.getPrice());
         priceLabel.setForeground(config.priceColor());
 
         BufferedImage coinImage = itemManager.getImage(ItemID.COINS_995);
         if (coinImage != null) {
             ImageIcon icon = new ImageIcon(coinImage.getScaledInstance(12, 12, Image.SCALE_SMOOTH));
-            JLabel iconLabel = new JLabel(icon);
-            panel.add(iconLabel);
+            priceLabel.setIcon(icon);
+            priceLabel.setIconTextGap(2);
         }
 
-        panel.add(priceLabel);
-        return panel;
+        return priceLabel;
     }
 }

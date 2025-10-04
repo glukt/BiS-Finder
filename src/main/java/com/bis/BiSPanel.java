@@ -49,7 +49,8 @@ public class BiSPanel extends PluginPanel {
 
         scrollPane = new JScrollPane(wrapper);
         scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
 
         add(welcomePanel, gbc);
     }
