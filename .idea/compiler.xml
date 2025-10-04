@@ -7,7 +7,7 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="upgrade-finder.main" />
+        <module name="rlupdate.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

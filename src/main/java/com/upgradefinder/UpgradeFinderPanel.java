@@ -1,57 +1,108 @@
 package com.upgradefinder;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.List;
 
 public class UpgradeFinderPanel extends PluginPanel {
 
+    private final JPanel welcomePanel;
+    private final JPanel resultsPanel;
+    private final JScrollPane scrollPane;
+
     public UpgradeFinderPanel() {
-        super();
-        setLayout(new BorderLayout());
-        showWelcomeMessage();
-    }
+        super(false); // Use this constructor to have more control over the layout
+        setLayout(new GridBagLayout());
+        setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-    private void showWelcomeMessage() {
-        removeAll();
-        JPanel welcomePanel = new JPanel();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        // Welcome Panel
+        welcomePanel = new JPanel(new BorderLayout());
         welcomePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        welcomePanel.setLayout(new BorderLayout());
-
         JLabel welcomeLabel = new JLabel("Right-click an item and select 'Check Upgrades'");
         welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
         welcomePanel.add(welcomeLabel, BorderLayout.CENTER);
 
-        add(welcomePanel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
+        // Results Panel and Wrapper for resizing
+        resultsPanel = new JPanel();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        resultsPanel.setBackground(ColorScheme.DARK_GRAY_COLOR);
+
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
+        wrapper.add(resultsPanel, BorderLayout.NORTH);
+
+        scrollPane = new JScrollPane(wrapper);
+        scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        // Add welcome panel initially
+        add(welcomePanel, gbc);
     }
 
-    public void showItemStats(String upgradeName, String slashBonus, String requirements) {
-        removeAll();
-        JPanel resultsPanel = new JPanel();
-        resultsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        resultsPanel.setLayout(new BorderLayout(0, 10));
+    public void showLoading() {
+        SwingUtilities.invokeLater(() -> {
+            removeAll();
+            resultsPanel.removeAll();
+            resultsPanel.add(createCenteredLabel("Searching for upgrades..."));
+            addScrollPane();
+            revalidate();
+            repaint();
+        });
+    }
 
-        // Title
-        JLabel titleLabel = new JLabel("Upgrade: " + upgradeName);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+    public void displayUpgrades(String itemName, List<Weapon> upgrades) {
+        SwingUtilities.invokeLater(() -> {
+            removeAll();
+            resultsPanel.removeAll();
 
-        // Stats Panel
-        JPanel statsPanel = new JPanel();
-        statsPanel.setLayout(new BorderLayout());
-        statsPanel.add(new JLabel("Slash Bonus: +" + slashBonus), BorderLayout.NORTH);
-        statsPanel.add(new JLabel("Requires: " + requirements), BorderLayout.SOUTH);
+            if (upgrades.isEmpty()) {
+                resultsPanel.add(createCenteredLabel("No upgrades found for " + itemName));
+            } else {
+                resultsPanel.add(createHeaderLabel("Upgrades for " + itemName));
+                for (Weapon upgrade : upgrades) {
+                    resultsPanel.add(new UpgradeBox(upgrade));
+                    resultsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+                }
+            }
+            addScrollPane();
+            revalidate();
+            repaint();
+        });
+    }
 
-        resultsPanel.add(titleLabel, BorderLayout.NORTH);
-        resultsPanel.add(statsPanel, BorderLayout.CENTER);
+    private void addScrollPane() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(scrollPane, gbc);
+    }
 
-        add(resultsPanel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
+    private JLabel createCenteredLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setBorder(new EmptyBorder(10, 10, 10, 10));
+        return label;
+    }
+
+    private JLabel createHeaderLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
+        label.setBorder(new EmptyBorder(10, 10, 10, 10));
+        return label;
     }
 }
