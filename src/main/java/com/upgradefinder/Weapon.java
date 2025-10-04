@@ -2,6 +2,9 @@ package com.upgradefinder;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class Weapon {
     private String name;
@@ -14,7 +17,7 @@ public class Weapon {
     private int attackSpeed;
     private String imageUrl;
     private String wikiUrl;
-    private Source source;
+    private List<Source> sources = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -29,7 +32,7 @@ public class Weapon {
                 ", attackSpeed=" + attackSpeed +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", wikiUrl='" + wikiUrl + '\'' +
-                ", source=" + (source != null ? source.getDisplayString() : "N/A") +
+                ", sources=" + sources +
                 '}';
     }
 }

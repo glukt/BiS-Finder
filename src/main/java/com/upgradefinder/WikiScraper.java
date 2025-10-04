@@ -83,25 +83,26 @@ public class WikiScraper {
                 }
 
                 Element currentElement = sourceHeader.nextElementSibling();
-                Source dropSource = null;
-                Source shopSource = null;
+                List<Source> foundSources = new ArrayList<>();
 
                 while (currentElement != null && !currentElement.tagName().equals("h2")) {
                     if (currentElement.is("table.wikitable")) {
                         Map<String, Integer> headerMap = parseTableHeader(currentElement);
                         if (headerMap.containsKey("Rarity") || headerMap.containsKey("Drop rate")) {
-                            dropSource = parseDropsTable(currentElement, headerMap);
+                            log.info("Identified a Drops table by its headers for {}", weapon.getName());
+                            MonsterDrop dropSource = parseDropsTable(currentElement, headerMap);
+                            if (dropSource != null) foundSources.add(dropSource);
                         } else if (headerMap.containsKey("Seller") || headerMap.containsKey("Shop")) {
-                            shopSource = parseShopTable(currentElement, headerMap);
+                            log.info("Identified a Shop table by its headers for {}", weapon.getName());
+                            ShopSource shopSource = parseShopTable(currentElement, headerMap);
+                            if (shopSource != null) foundSources.add(shopSource);
                         }
                     }
                     currentElement = currentElement.nextElementSibling();
                 }
 
-                if (dropSource != null) {
-                    weapon.setSource(dropSource);
-                } else if (shopSource != null) {
-                    weapon.setSource(shopSource);
+                if (!foundSources.isEmpty()) {
+                    weapon.setSources(foundSources);
                 }
             }
         } catch (IOException e) {

@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 public class UpgradeBox extends JPanel {
@@ -84,38 +85,43 @@ public class UpgradeBox extends JPanel {
         addStat(contentPanel, c, "Strength Bonus:", String.valueOf(weapon.getStrengthBonus()));
         addStat(contentPanel, c, "Attack Speed:", String.valueOf(weapon.getAttackSpeed()));
 
-        // Add source information in a dedicated panel
-        Source source = weapon.getSource();
-        if (source != null) {
-            JPanel sourceInfoPanel = new JPanel(new GridBagLayout());
-            sourceInfoPanel.setBorder(BorderFactory.createTitledBorder("Source Information"));
-            sourceInfoPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-
-            GridBagConstraints sourceC = new GridBagConstraints();
-            sourceC.fill = GridBagConstraints.HORIZONTAL;
-            sourceC.weightx = 1.0;
-            sourceC.gridx = 0;
-            sourceC.gridy = 0;
-            sourceC.anchor = GridBagConstraints.WEST;
-
-            if (source instanceof MonsterDrop) {
-                MonsterDrop drop = (MonsterDrop) source;
-                addStat(sourceInfoPanel, sourceC, "Source:", drop.getMonsterName());
-                addStat(sourceInfoPanel, sourceC, "Level:", drop.getLevel());
-                addStat(sourceInfoPanel, sourceC, "Quantity:", drop.getQuantity());
-                addStat(sourceInfoPanel, sourceC, "Rarity:", drop.getRarity());
-            } else if (source instanceof ShopSource) {
-                ShopSource shop = (ShopSource) source;
-                addStat(sourceInfoPanel, sourceC, "Seller:", shop.getSeller());
-                addStat(sourceInfoPanel, sourceC, "Location:", shop.getLocation());
-                addStat(sourceInfoPanel, sourceC, "Stock:", shop.getStock());
-                addStat(sourceInfoPanel, sourceC, "Price:", shop.getPrice());
-            }
+        // Add source information panels
+        List<Source> sources = weapon.getSources();
+        if (sources != null && !sources.isEmpty()) {
             c.gridy++;
             c.gridwidth = 2; // Span across both columns
             contentPanel.add(Box.createRigidArea(new Dimension(0, 10)), c);
             c.gridy++;
-            contentPanel.add(sourceInfoPanel, c);
+
+            for (Source source : sources) {
+                JPanel sourceInfoPanel = new JPanel(new GridBagLayout());
+                sourceInfoPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+
+                GridBagConstraints sourceC = new GridBagConstraints();
+                sourceC.fill = GridBagConstraints.HORIZONTAL;
+                sourceC.weightx = 1.0;
+                sourceC.gridx = 0;
+                sourceC.gridy = 0;
+                sourceC.anchor = GridBagConstraints.WEST;
+
+                if (source instanceof MonsterDrop) {
+                    sourceInfoPanel.setBorder(BorderFactory.createTitledBorder("Drop Source"));
+                    MonsterDrop drop = (MonsterDrop) source;
+                    addStat(sourceInfoPanel, sourceC, "Source:", drop.getMonsterName());
+                    addStat(sourceInfoPanel, sourceC, "Level:", drop.getLevel());
+                    addStat(sourceInfoPanel, sourceC, "Quantity:", drop.getQuantity());
+                    addStat(sourceInfoPanel, sourceC, "Rarity:", drop.getRarity());
+                } else if (source instanceof ShopSource) {
+                    sourceInfoPanel.setBorder(BorderFactory.createTitledBorder("Shop Location"));
+                    ShopSource shop = (ShopSource) source;
+                    addStat(sourceInfoPanel, sourceC, "Seller:", shop.getSeller());
+                    addStat(sourceInfoPanel, sourceC, "Location:", shop.getLocation());
+                    addStat(sourceInfoPanel, sourceC, "Stock:", shop.getStock());
+                    addStat(sourceInfoPanel, sourceC, "Price:", shop.getPrice());
+                }
+                contentPanel.add(sourceInfoPanel, c);
+                c.gridy++;
+            }
         }
 
         contentPanel.setVisible(false); // Collapsed by default
