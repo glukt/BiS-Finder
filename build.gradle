@@ -27,7 +27,7 @@ dependencies {
 }
 
 // Corrected to match your actual package name
-group = 'com.upgradefinder'
+group = 'com.bis'
 version = '1.0-SNAPSHOT'
 
 tasks.withType(JavaCompile).configureEach {
@@ -39,7 +39,7 @@ tasks.register('shadowJar', Jar) {
     dependsOn configurations.testRuntimeClasspath
     manifest {
         // Corrected to match your actual test file
-        attributes('Main-Class': 'com.upgradefinder.UpgradeFinderPluginTest', 'Multi-Release': true)
+        attributes('Main-Class': 'com.bis.BiSPluginTest', 'Multi-Release': true)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from sourceSets.main.output

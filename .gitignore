@@ -1,0 +1,9 @@
+# Gradle cache
+.gradle/
+
+# Build output
+build/
+
+# IntelliJ IDEA files
+.idea/
+*.iml

@@ -1,4 +1,4 @@
-# Specification for the RuneLite Upgrade Finder Plugin
+# Specification for the Best in Slot (BiS) Plugin
 
 ## 1. Project Vision & Goals
 
